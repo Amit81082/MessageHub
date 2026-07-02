@@ -18,7 +18,7 @@ export async function POST(request: Request) {
      return new NextResponse("Missing required fields", { status: 400 });
    }
 
-
+    console.time("create")
     const newMessage = await prisma.message.create({
       data: {
         body: message,
@@ -46,7 +46,9 @@ export async function POST(request: Request) {
       },
     });
 
+    console.timeEnd("create")
 
+   
   const updatedConversation = await prisma.conversation.update({
     where: {
       id: conversationId,

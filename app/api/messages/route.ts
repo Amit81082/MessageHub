@@ -14,11 +14,11 @@ export async function POST(request: Request) {
 
     const { message, image, conversationId } = await request.json();
 
-   if (!message && !image) {
-     return new NextResponse("Missing required fields", { status: 400 });
-   }
+    if (!message && !image) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
 
-    console.time("create")
+    // console.time("create");
     const newMessage = await prisma.message.create({
       data: {
         body: message,
@@ -41,45 +41,74 @@ export async function POST(request: Request) {
       },
 
       include: {
-        sender: true,
-        seen: true,
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        seen: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
       },
     });
 
-    console.timeEnd("create")
+    // console.timeEnd("create");
 
-   
-  const updatedConversation = await prisma.conversation.update({
-    where: {
-      id: conversationId,
-    },
-    data: {
-      lastMessageAt: new Date(),
-      messages: {
-        connect: {
-          id: newMessage.id,
+    const updatedConversation = await prisma.conversation.update({
+      where: {
+        id: conversationId,
+      },
+      data: {
+        lastMessageAt: new Date(),
+        messages: {
+          connect: {
+            id: newMessage.id,
+          },
         },
       },
-    },
-    select: {
-      id: true,
-      users: {
-        select: {
-          email: true,
+      select: {
+        id: true,
+        users: {
+          select: {
+            email: true,
+          },
         },
       },
-    },
-  });
+    });
 
-    await pusherServer.trigger(conversationId, "messages:new", newMessage);
+    // console.log(newMessage.sender);
 
-    const lastMessage = newMessage;
+    const messageForPusher = {
+      id: newMessage.id,
+      body: newMessage.body,
+      image: newMessage.image,
+      createdAt: newMessage.createdAt,
+
+      sender: {
+        id: newMessage.sender.id,
+        name: newMessage.sender.name,
+        email: newMessage.sender.email,
+        image: newMessage.sender.image,
+      },
+
+      seen: newMessage.seen.map((user) => ({
+        id: user.id,
+        email: user.email,
+      })),
+    };
+    await pusherServer.trigger(conversationId, "messages:new", messageForPusher);
 
     await Promise.all(
       updatedConversation.users.map((user) =>
         pusherServer.trigger(user.email!, "conversation:update", {
           id: conversationId,
-          messages: [lastMessage],
+          messages: [messageForPusher],
         }),
       ),
     );

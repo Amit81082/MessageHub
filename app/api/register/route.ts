@@ -1,6 +1,6 @@
 // app/api/register/route.ts
 
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";

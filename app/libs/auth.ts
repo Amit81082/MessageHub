@@ -3,7 +3,7 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import prisma from "./prismadb";
 
 
@@ -61,7 +61,7 @@ const authOptions: AuthOptions = {
   ],
 
   debug: process.env.NODE_ENV === "development",
-  
+
   pages: {
     signIn: "/",
   },

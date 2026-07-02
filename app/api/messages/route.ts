@@ -18,6 +18,7 @@ export async function POST(request: Request) {
      return new NextResponse("Missing required fields", { status: 400 });
    }
 
+
     const newMessage = await prisma.message.create({
       data: {
         body: message,
@@ -45,47 +46,45 @@ export async function POST(request: Request) {
       },
     });
 
-    const updatedConversation = await prisma.conversation.update({
-      where: {
-        id: conversationId,
-      },
 
-      data: {
-        lastMessageAt: new Date(),
-
-        messages: {
-          connect: {
-            id: newMessage.id,
-          },
+  const updatedConversation = await prisma.conversation.update({
+    where: {
+      id: conversationId,
+    },
+    data: {
+      lastMessageAt: new Date(),
+      messages: {
+        connect: {
+          id: newMessage.id,
         },
       },
-
-      include: {
-        users: true,
-        messages: {
-          include: {
-            seen: true,
-          },
+    },
+    select: {
+      id: true,
+      users: {
+        select: {
+          email: true,
         },
       },
-    });
+    },
+  });
 
     await pusherServer.trigger(conversationId, "messages:new", newMessage);
 
-    const lastMessage =
-      updatedConversation.messages[updatedConversation.messages.length - 1];
+    const lastMessage = newMessage;
 
-    updatedConversation.users.map((user) => {
-      pusherServer.trigger(user.email!, "conversation:update", {
-        id: conversationId,
-        messages: [lastMessage],
-      });
-    });
+    await Promise.all(
+      updatedConversation.users.map((user) =>
+        pusherServer.trigger(user.email!, "conversation:update", {
+          id: conversationId,
+          messages: [lastMessage],
+        }),
+      ),
+    );
 
     return NextResponse.json(newMessage);
   } catch (error) {
     console.log(error);
-
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

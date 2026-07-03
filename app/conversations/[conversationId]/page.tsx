@@ -2,9 +2,9 @@ import getConversationById from "@/app/actions/getConversationById";
 import getMessages from "@/app/actions/getMessages";
 
 import EmptyState from "@/app/components/EmptyState";
-import Header from "./components/Header";
-import Body from "./components/Body";
-import MessageForm from "./components/MessageForm";
+import ClientConversation from "./components/ClientConversation";
+import getCurrentUser from "@/app/actions/getCurrentUser";
+
 
 interface IParams {
   conversationId: string;
@@ -12,8 +12,9 @@ interface IParams {
 
 const ConversationIdPage = async ({ params }: { params: IParams }) => {
   const conversation = await getConversationById(params?.conversationId);
-
+  const currentUser = await getCurrentUser();
   const messages = await getMessages(params?.conversationId);
+
 
   if (!conversation) {
     return (
@@ -27,11 +28,11 @@ const ConversationIdPage = async ({ params }: { params: IParams }) => {
 
   return (
     <div className="lg:pl-80 h-full">
-      <div className="h-full flex flex-col">
-        <Header conversation={conversation} />
-        <Body initialMessages={messages} />
-        <MessageForm />
-      </div>
+      <ClientConversation
+        conversation={conversation}
+        messages={messages}
+        currentUser={currentUser!}
+      />
     </div>
   );
 };

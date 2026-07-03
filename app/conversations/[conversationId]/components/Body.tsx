@@ -11,12 +11,12 @@ import { pusherClient } from "@/app/libs/pusherClient";
 
 
 interface BodyProps {
-  initialMessages: FullMessageType[];
+  messages: FullMessageType[];
+  setMessages: React.Dispatch<React.SetStateAction<FullMessageType[]>>;
 }
 
-const Body: React.FC<BodyProps> = ({ initialMessages }) => {
+const Body: React.FC<BodyProps> = ({ messages, setMessages }) => {
   const { conversationId } = useConversation();
-  const [messages, setMessages] = useState(initialMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -38,9 +38,22 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
 
     const messageHandler = (message: FullMessageType) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
+
       setMessages((current) => {
+        // Already received
         if (find(current, { id: message.id })) {
           return current;
+        }
+
+        // Find matching temporary message
+        const tempIndex = current.findIndex(
+          (m) => m.pending && m.clientId === message.clientId,
+        );
+
+        if (tempIndex !== -1) {
+          const updated = [...current];
+          updated[tempIndex] = message;
+          return updated;
         }
 
         return [...current, message];

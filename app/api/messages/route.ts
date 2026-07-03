@@ -1,3 +1,4 @@
+console.time("TOTAL");
 import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";
@@ -12,13 +13,13 @@ export async function POST(request: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { message, image, conversationId } = await request.json();
+    const { message, image, conversationId, clientId } = await request.json();
 
     if (!message && !image) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    // console.time("create");
+    console.time("create");
     const newMessage = await prisma.message.create({
       data: {
         body: message,
@@ -89,6 +90,9 @@ export async function POST(request: Request) {
       body: newMessage.body,
       image: newMessage.image,
       createdAt: newMessage.createdAt,
+      senderId: newMessage.sender.id, // ✅ ADD
+      conversationId: newMessage.conversationId, // ✅ ADD
+      seenIds: newMessage.seen.map((u) => u.id), // ✅ ADD
 
       sender: {
         id: newMessage.sender.id,
@@ -102,7 +106,10 @@ export async function POST(request: Request) {
         email: user.email,
       })),
     };
-    await pusherServer.trigger(conversationId, "messages:new", messageForPusher);
+    await pusherServer.trigger(conversationId, "messages:new", {
+      ...messageForPusher,
+      clientId,
+    });
 
     await Promise.all(
       updatedConversation.users.map((user) =>
@@ -113,9 +120,11 @@ export async function POST(request: Request) {
       ),
     );
 
+    console.timeEnd("TOTAL");
     return NextResponse.json(newMessage);
   } catch (error) {
     console.log(error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+

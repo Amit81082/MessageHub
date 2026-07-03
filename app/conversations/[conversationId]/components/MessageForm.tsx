@@ -7,11 +7,16 @@ import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import useConversation from "@/app/hooks/useConversation";
 import MessageInput from "./MessageInput";
 import { CldUploadButton } from "next-cloudinary";
+import { FullMessageType } from "@/app/types";
+import { User } from "@prisma/client";
+
+interface MessageFormProps {
+  setMessages: React.Dispatch<React.SetStateAction<FullMessageType[]>>;
+  currentUser: User;
+}
 
 
-
-
-const MessageForm = () => {
+const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) => {
   const { conversationId } = useConversation();
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
@@ -21,10 +26,45 @@ const MessageForm = () => {
 
 
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    setValue("message", "", { shouldValidate: true });
-   await axios.post("/api/messages", { ...data, conversationId });
-  };
+ const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+   const text = data.message;
+
+   if (!text?.trim()) return;
+
+   setValue("message", "", { shouldValidate: true });
+
+   const clientId = crypto.randomUUID();
+
+   const tempMessage: FullMessageType = {
+     id: `temp-${clientId}`,
+     clientId,
+     body: text,
+     image: null,
+     createdAt: new Date(),
+     conversationId,
+     senderId: currentUser.id,
+     seenIds: [],
+     sender: currentUser,
+     seen: [],
+     pending: true,
+   };
+
+   // ✅ Instant UI
+   setMessages((current) => [...current, tempMessage]);
+
+   try {
+     await axios.post("/api/messages", {
+       message: text,
+       conversationId,
+       clientId
+     });
+   } catch (error) {
+     // Remove temp message if request fails
+     setMessages((current) =>
+       current.filter((message) => message.id !== clientId),
+     );
+   }
+ };
 
   const handleUpload = async (result: any) => {
    await axios.post("/api/messages", {

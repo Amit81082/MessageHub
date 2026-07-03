@@ -37,24 +37,33 @@ export async function POST(request: Request) {
           },
         },
         include: {
-          users: true,
-          messages: {
-            include: {
-              sender: true,
-              seen: true,
-            },
-            orderBy: {
-              createdAt: "asc",
+          users: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
             },
           },
         },
       });
 
-      newConversation.users.forEach((user) => {
-        if (user.email) {
-          pusherServer.trigger(user.email, "conversation:new", newConversation);
-        }
-      });
+      const conversationForPusher = {
+        ...newConversation,
+        messages: [],
+      };
+
+      await Promise.all(
+        newConversation.users.map((user) =>
+          user.email
+            ? pusherServer.trigger(
+                user.email,
+                "conversation:new",
+                conversationForPusher,
+              )
+            : Promise.resolve(),
+        ),
+      );
 
       return NextResponse.json(newConversation);
     }
@@ -102,27 +111,36 @@ export async function POST(request: Request) {
         },
       },
       include: {
-        users: true,
-        messages: {
-          include: {
-            sender: true,
-            seen: true,
-          },
-          orderBy: {
-            createdAt: "asc",
+        users: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
           },
         },
       },
     });
 
-    newConversation.users.map((user) => {
-      if (user.email) {
-        pusherServer.trigger(user.email, "conversation:new", newConversation);
-      }
-    });
+    const conversationForPusher = {
+      ...newConversation,
+      messages: [],
+    };
+
+   await Promise.all(
+     newConversation.users.map((user) =>
+       user.email
+         ? pusherServer.trigger(
+             user.email,
+             "conversation:new",
+             conversationForPusher,
+           )
+         : Promise.resolve(),
+     ),
+   );
 
 
-    return NextResponse.json(newConversation, { status: 201 });
+    return NextResponse.json(conversationForPusher, { status: 201 });
   } catch (error) {
     console.log(error);
 

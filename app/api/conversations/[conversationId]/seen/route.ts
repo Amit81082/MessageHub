@@ -67,12 +67,39 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       },
     });
 
-    await pusherServer.trigger(currentUser.email, "conversation:update", {
-      id: conversationId,
-      messages: [updatedMessage],
-    })
+   const messageForPusher = {
+     id: updatedMessage.id,
+     body: updatedMessage.body,
+     image: updatedMessage.image,
+     createdAt: updatedMessage.createdAt,
+     conversationId: updatedMessage.conversationId,
+     senderId: updatedMessage.senderId,
+     seenIds: updatedMessage.seen.map((u) => u.id),
 
-    await pusherServer.trigger(conversationId!, "message:update", updatedMessage);
+     sender: {
+       id: updatedMessage.sender.id,
+       name: updatedMessage.sender.name,
+       email: updatedMessage.sender.email,
+       image: updatedMessage.sender.image,
+     },
+
+     seen: updatedMessage.seen.map((u) => ({
+       id: u.id,
+       email: u.email,
+       name: u.name, 
+       image: u.image,
+     })),
+   };
+
+   console.log(JSON.stringify(messageForPusher).length);
+
+   await pusherServer.trigger(
+     conversationId,
+     "message:update",
+     messageForPusher,
+   );
+
+    await pusherServer.trigger(conversationId!, "message:update", messageForPusher);
 
 
     return NextResponse.json(updatedMessage);

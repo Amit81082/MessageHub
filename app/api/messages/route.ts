@@ -53,7 +53,9 @@ export async function POST(request: Request) {
         seen: {
           select: {
             id: true,
+            name : true,
             email: true,
+            image: true
           },
         },
       },
@@ -104,6 +106,8 @@ export async function POST(request: Request) {
       seen: newMessage.seen.map((user) => ({
         id: user.id,
         email: user.email,
+        name: user.name,
+        image: user.image
       })),
     };
     await pusherServer.trigger(conversationId, "messages:new", {

@@ -11,13 +11,13 @@ import { User } from "@prisma/client";
 import useOtherUser from "@/app/hooks/useOtherUser";
 
 import Avatar from "@/app/components/Avatar";
-import { FullConversationType } from "@/app/types";
+import { ConversationHeaderType } from "@/app/types";
 import ProfileDrawer from "./ProfileDrawer";
 import AvatarGroup from "@/app/components/AvatarGroup";
 import useActiveList from "@/app/hooks/useActiveList";
 
 interface HeaderProps {
-  conversation: FullConversationType;
+  conversation: ConversationHeaderType;
 }
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {

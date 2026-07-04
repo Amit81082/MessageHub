@@ -2,11 +2,18 @@ import { User } from "@prisma/client";
 
 import UserBox from "./UserBox";
 
+type ConversationLookup = {
+  id: string;
+  userIds: string[];
+  isGroup: boolean;
+};
+
 interface UserListProps {
   items: User[];
+  conversations: ConversationLookup[];
 }
 
-const UserList: React.FC<UserListProps> = ({ items }) => {
+const UserList: React.FC<UserListProps> = ({ items, conversations }) => {
   return (
     <aside
       className="
@@ -28,7 +35,7 @@ const UserList: React.FC<UserListProps> = ({ items }) => {
           <div className="text-2xl font-bold text-neutral-800">People</div>
         </div>
         {items.map((item) => (
-          <UserBox key={item.id} data={item} />
+          <UserBox key={item.id} data={item} conversations={conversations} />
         ))}
       </div>
     </aside>

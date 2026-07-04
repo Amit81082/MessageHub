@@ -5,11 +5,11 @@ import { useState } from "react";
 import Header from "./Header";
 import Body from "./Body";
 import MessageForm from "./MessageForm";
-import { FullConversationType, FullMessageType } from "@/app/types";
+import { ConversationHeaderType, FullMessageType } from "@/app/types";
 import { User } from "@prisma/client";
 
 interface ClientConversationProps {
-  conversation: FullConversationType;
+  conversation: ConversationHeaderType;
   messages: FullMessageType[];
   currentUser: User;
 }

@@ -9,13 +9,13 @@ import { User } from "@prisma/client";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/AvatarGroup";
 import useOtherUser from "@/app/hooks/useOtherUser";
-import { FullConversationType } from "@/app/types";
+import { ConversationHeaderType } from "@/app/types";
 // import Modal from "@/app/components/Modal";
 import ConfirmModal from "./ConfirmModal";
 import useActiveList from "@/app/hooks/useActiveList";
 
 interface ProfileDrawerProps {
-  data: FullConversationType;
+  data: ConversationHeaderType;
   isOpen: boolean;
   onClose: () => void;
 }

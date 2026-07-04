@@ -8,30 +8,47 @@ import Avatar from "../components/Avatar";
 import clsx from "clsx";
 import LoadingModal from "../components/LoadingModal";
 
+type ConversationLookup = {
+  id: string;
+  userIds: string[];
+  isGroup: boolean;
+};
+
 interface UserBoxProps {
   data: User;
+  conversations: ConversationLookup[];
 }
 
-const UserBox: React.FC<UserBoxProps> = ({ data }) => {
+const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = useCallback(async () => {
+    const existingConversation = conversations.find(
+      (conversation) =>
+        !conversation.isGroup && conversation.userIds.includes(data.id),
+    );
+
+    if (existingConversation) {
+      router.push(`/conversations/${existingConversation.id}`);
+      return;
+    }
+
     try {
       setIsLoading(true);
 
       const response = await axios.post("/api/conversations", {
-        userId: data?.id,
+        userId: data.id,
       });
 
-      router.push(`/conversations/${response?.data?.id}`);
+      router.push(`/conversations/${response.data.id}`);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
-  }, [data.id, router]);
+  }, [data.id, conversations, router]);
 
   return (
     <>

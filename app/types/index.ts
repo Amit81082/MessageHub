@@ -11,3 +11,7 @@ export type FullConversationType = Conversation & {
   users: User[];
   messages: FullMessageType[];
 };
+
+export type ConversationHeaderType = Conversation & {
+  users: User[];
+};

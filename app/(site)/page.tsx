@@ -1,7 +1,16 @@
 import Image from "next/image";
 import AuthForm from "./components/AuthForm";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+import authOptions from "@/app/libs/auth";
+
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect("/users");
+  }
   return (
     <div className="flex flex-col justify-center min-h-full py-12 sm:px-6 lg:px-8 bg-gray-100 ">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">

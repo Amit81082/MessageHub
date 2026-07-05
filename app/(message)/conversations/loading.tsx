@@ -1,5 +1,5 @@
+import LoadingModal from '@/app/components/LoadingModal'
 import React from 'react'
-import LoadingModal from '../components/LoadingModal'
 
 const Loading = () => {
   return (

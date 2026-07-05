@@ -1,6 +1,6 @@
-import getConversations from "../actions/getConversations";
-import getUsers from "../actions/getUsers";
-import Sidebar from "../components/sidebar/Sidebar";
+import getConversations from "@/app/actions/getConversations";
+import getUsers from "@/app/actions/getUsers";
+import Sidebar from "@/app/components/sidebar/Sidebar";
 import ConversationList from "./components/ConversationList";
 
 export default async function ConversationLayout({
@@ -11,7 +11,10 @@ export default async function ConversationLayout({
   // const conversations = await getConversations();
   // const users = await getUsers();
 
-  const [conversations, users] = await Promise.all([getConversations(), getUsers()]);
+  const [conversations, users] = await Promise.all([
+    getConversations(),
+    getUsers(),
+  ]);
 
   return (
     <Sidebar>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
@@ -26,6 +26,10 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   const session = useSession();
 
   const otherUser = useOtherUser(data);
+
+  useEffect(() => {
+    router.prefetch(`/conversations/${data.id}`);
+  }, [router, data.id]);
 
   const handleClick = useCallback(() => {
     router.push(`/conversations/${data.id}`);

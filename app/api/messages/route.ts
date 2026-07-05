@@ -1,4 +1,3 @@
-console.time("TOTAL");
 import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";
@@ -19,7 +18,6 @@ export async function POST(request: Request) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    console.time("create");
     const newMessage = await prisma.message.create({
       data: {
         body: message,
@@ -124,7 +122,6 @@ export async function POST(request: Request) {
       ),
     );
 
-    console.timeEnd("TOTAL");
     return NextResponse.json(newMessage);
   } catch (error) {
     console.log(error);

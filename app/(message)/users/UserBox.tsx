@@ -4,9 +4,10 @@ import axios from "axios";
 import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
-import Avatar from "../components/Avatar";
 import clsx from "clsx";
-import LoadingModal from "../components/LoadingModal";
+import { useEffect } from "react";
+import Avatar from "@/app/components/Avatar";
+import LoadingModal from "@/app/components/LoadingModal";
 
 type ConversationLookup = {
   id: string;
@@ -23,6 +24,17 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const existingConversation = conversations.find(
+      (conversation) =>
+        !conversation.isGroup && conversation.userIds.includes(data.id),
+    );
+
+    if (existingConversation) {
+      router.prefetch(`/conversations/${existingConversation.id}`);
+    }
+  }, [conversations, data.id, router]);
 
   const handleClick = useCallback(async () => {
     const existingConversation = conversations.find(

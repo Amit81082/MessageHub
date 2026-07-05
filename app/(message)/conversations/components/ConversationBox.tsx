@@ -27,9 +27,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
 
   const otherUser = useOtherUser(data);
 
-  useEffect(() => {
-    router.prefetch(`/conversations/${data.id}`);
-  }, [router, data.id]);
+
 
   const handleClick = useCallback(() => {
     router.push(`/conversations/${data.id}`);

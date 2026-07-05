@@ -25,17 +25,6 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const existingConversation = conversations.find(
-      (conversation) =>
-        !conversation.isGroup && conversation.userIds.includes(data.id),
-    );
-
-    if (existingConversation) {
-      router.prefetch(`/conversations/${existingConversation.id}`);
-    }
-  }, [conversations, data.id, router]);
-
   const handleClick = useCallback(async () => {
     const existingConversation = conversations.find(
       (conversation) =>

@@ -21,7 +21,7 @@ const useActiveChannel = () => {
     const channel = pusherClient.subscribe("presence-messenger");
 
     channel.bind("pusher:subscription_succeeded", (members: Members) => {
-       console.log("INITIAL MEMBERS", members);
+      //  console.log("INITIAL MEMBERS", members);
       const initialMembers: string[] = [];
 
       members.each((member: any) => {
@@ -32,12 +32,12 @@ const useActiveChannel = () => {
     });
 
     channel.bind("pusher:member_added", (member: any) => {
-      console.log("MEMBER ADDED:", member.id);
+      // console.log("MEMBER ADDED:", member.id);
       add(member.id);
     });
 
     channel.bind("pusher:member_removed", (member: any) => {
-      console.log("MEMBER REMOVED:", member.id);
+      // console.log("MEMBER REMOVED:", member.id);
       remove(member.id);
     });
 

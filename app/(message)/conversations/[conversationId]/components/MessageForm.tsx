@@ -2,7 +2,7 @@
 import axios from "axios";
 import { HiPhoto, HiPaperAirplane } from "react-icons/hi2";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import clsx from "clsx";
 
 import useConversation from "@/app/hooks/useConversation";
@@ -27,37 +27,12 @@ const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) =
 
   const { ref: formRef, ...messageRegister } = register("message", { required: true });
 
-  // Focus the input on component mount
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  // Restore focus if it's lost (safety net for re-renders)
-  useEffect(() => {
-    const handleBlur = () => {
-      // If blur happens, automatically refocus
-      setTimeout(() => {
-        if (document.activeElement !== inputRef.current && inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 0);
-    };
-
-    const input = inputRef.current;
-    if (input) {
-      input.addEventListener("blur", handleBlur);
-      return () => input.removeEventListener("blur", handleBlur);
-    }
-  }, []);
-
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const text = data.message;
 
     if (!text?.trim()) return;
 
     setValue("message", "", { shouldValidate: false });
-    // Focus will be handled by useEffect, no need to manually focus
-    inputRef.current?.focus();
 
     const clientId = crypto.randomUUID();
 

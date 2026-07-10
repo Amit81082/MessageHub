@@ -2,9 +2,10 @@
 import axios from "axios";
 import { HiPhoto, HiPaperAirplane } from "react-icons/hi2";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { useEffect, useRef } from "react";
+import clsx from "clsx";
 
 import useConversation from "@/app/hooks/useConversation";
-import MessageInput from "./MessageInput";
 import { CldUploadButton } from "next-cloudinary";
 import { FullMessageType } from "@/app/types";
 import { User } from "@prisma/client";
@@ -14,63 +15,92 @@ interface MessageFormProps {
   currentUser: User;
 }
 
-
 const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) => {
   const { conversationId } = useConversation();
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<FieldValues>({
     defaultValues: {
       message: ""
     }
   });
 
+  const { ref: formRef, ...messageRegister } = register("message", { required: true });
 
+  // Focus the input on component mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
- const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-   const text = data.message;
+  // Restore focus if it's lost (safety net for re-renders)
+  useEffect(() => {
+    const handleBlur = () => {
+      // If blur happens, automatically refocus
+      setTimeout(() => {
+        if (document.activeElement !== inputRef.current && inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 0);
+    };
 
-   if (!text?.trim()) return;
+    const input = inputRef.current;
+    if (input) {
+      input.addEventListener("blur", handleBlur);
+      return () => input.removeEventListener("blur", handleBlur);
+    }
+  }, []);
 
-   setValue("message", "", { shouldValidate: true });
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const text = data.message;
 
-   const clientId = crypto.randomUUID();
+    if (!text?.trim()) return;
 
-   const tempMessage: FullMessageType = {
-     id: `temp-${clientId}`,
-     clientId,
-     body: text,
-     image: null,
-     createdAt: new Date(),
-     conversationId,
-     senderId: currentUser.id,
-     seenIds: [],
-     sender: currentUser,
-     seen: [],
-     pending: true,
-   };
+    setValue("message", "", { shouldValidate: false });
+    // Focus will be handled by useEffect, no need to manually focus
+    inputRef.current?.focus();
 
-   // ✅ Instant UI
-   setMessages((current) => [...current, tempMessage]);
+    const clientId = crypto.randomUUID();
 
-   try {
-     await axios.post("/api/messages", {
-       message: text,
-       conversationId,
-       clientId
-     });
-   } catch (error) {
-     // Remove temp message if request fails
-     setMessages((current) =>
-       current.filter((message) => message.id !== clientId),
-     );
-   }
- };
+    const tempMessage: FullMessageType = {
+      id: `temp-${clientId}`,
+      clientId,
+      body: text,
+      image: null,
+      createdAt: new Date(),
+      conversationId,
+      senderId: currentUser.id,
+      seenIds: [],
+      sender: currentUser,
+      seen: [],
+      pending: true,
+    };
 
-  const handleUpload = async (result: any) => {
-   await axios.post("/api/messages", {
-      image: result?.info?.secure_url,
+    // ✅ Instant UI
+    setMessages((current) => [...current, tempMessage]);
+
+    try {
+      await axios.post("/api/messages", {
+        message: text,
+        conversationId,
+        clientId
+      });
+    } catch {
+      // Remove temp message if request fails
+      setMessages((current) =>
+        current.filter((message) => message.id !== clientId),
+      );
+    }
+  };
+
+  const handleUpload = async (result: unknown) => {
+    const secureUrl = (result as { info?: { secure_url?: string } })?.info?.secure_url;
+
+    await axios.post("/api/messages", {
+      image: secureUrl,
       conversationId
     });
   };
+
   return (
     <div className="py-4 px-4 bg-white border-t flex gap-2 items-center w-full lg:gap-4">
       <CldUploadButton
@@ -87,12 +117,31 @@ const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) =
         onSubmit={handleSubmit(onSubmit)}
         className="flex gap-2 items-center w-full lg:gap-4"
       >
-        <MessageInput
+        <input
           id="message"
-          register={register}
-          errors={errors}
-          required
+          type="text"
+          autoComplete="message"
           placeholder="Write a message"
+          {...messageRegister}
+          ref={(element) => {
+            formRef(element);
+            inputRef.current = element;
+          }}
+          className={clsx(
+            `
+              w-full
+              rounded-full
+              border-0
+              bg-neutral-100
+              px-4
+              py-3
+              text-black
+              focus:outline-none
+              focus:ring-2
+              focus:ring-sky-500
+            `,
+            errors.message && "focus:ring-rose-500",
+          )}
         />
         <button
           type="submit"

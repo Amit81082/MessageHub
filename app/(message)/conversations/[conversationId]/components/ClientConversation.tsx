@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 
 import Header from "./Header";
 import Body from "./Body";
@@ -14,6 +14,8 @@ interface ClientConversationProps {
   currentUser: User;
 }
 
+const MemoizedMessageForm = memo(MessageForm);
+
 const ClientConversation: React.FC<ClientConversationProps> = ({
   conversation,
   messages,
@@ -21,13 +23,17 @@ const ClientConversation: React.FC<ClientConversationProps> = ({
 }) => {
   const [allMessages, setAllMessages] = useState(messages);
 
+  const handleSetMessages = useCallback<typeof setAllMessages>((updater) => {
+    setAllMessages(updater);
+  }, []);
+
   return (
     <div className="h-full flex flex-col">
       <Header conversation={conversation} />
 
-      <Body messages={allMessages} setMessages={setAllMessages} />
+      <Body messages={allMessages} setMessages={handleSetMessages} />
 
-      <MessageForm setMessages={setAllMessages} currentUser={currentUser} />
+      <MemoizedMessageForm setMessages={handleSetMessages} currentUser={currentUser} />
     </div>
   );
 };

@@ -1,5 +1,6 @@
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { FieldErrors, FieldValues, UseFormRegister, UseFormRegisterReturn } from "react-hook-form";
 import clsx from "clsx";
+import { useEffect, useRef } from "react";
 
 interface MessageInputProps {
   id: string;
@@ -8,6 +9,7 @@ interface MessageInputProps {
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors;
   required?: boolean;
+  autoFocus?: boolean;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -17,15 +19,30 @@ const MessageInput: React.FC<MessageInputProps> = ({
   register,
   errors,
   required,
+  autoFocus,
 }) => {
+  const { ref, ...rest } = register(id, {
+    required,
+  }) as UseFormRegisterReturn;
+
+  const internalRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (autoFocus && internalRef.current) {
+      internalRef.current.focus();
+    }
+  }, [autoFocus]);
+
   return (
     <input
       id={id}
       type={type}
       autoComplete={id}
-      {...register(id, {
-        required,
-      })}
+      {...rest}
+      ref={(element) => {
+        ref(element);
+        internalRef.current = element;
+      }}
       className={clsx(
         `
           w-full

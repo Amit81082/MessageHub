@@ -1,4 +1,9 @@
-import { FieldErrors, FieldValues, UseFormRegister, UseFormRegisterReturn } from "react-hook-form";
+import {
+  FieldErrors,
+  FieldValues,
+  UseFormRegister,
+  UseFormRegisterReturn,
+} from "react-hook-form";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 

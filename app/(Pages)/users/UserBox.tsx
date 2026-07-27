@@ -7,7 +7,6 @@ import { useState, useCallback } from "react";
 import clsx from "clsx";
 import { useEffect } from "react";
 import Avatar from "@/app/components/Avatar";
-import LoadingModal from "@/app/components/LoadingModal";
 
 type ConversationLookup = {
   id: string;
@@ -44,6 +43,7 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
       });
 
       router.push(`/conversations/${response.data.id}`);
+      router.refresh();
     } catch (error) {
       console.error(error);
     } finally {
@@ -53,21 +53,24 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
 
   return (
     <>
-      {isLoading && <LoadingModal />}
       <div
         onClick={handleClick}
         className={clsx(
-          `flex items-center space-x-3 relative bg-white gap-3 w-full p-3 rounded-lg transition cursor-pointer hover:bg-neutral-100`,
-          isLoading && "opacity-50",
+          "flex items-center space-x-3 relative bg-white gap-3 w-full p-3 rounded-lg transition cursor-pointer hover:bg-neutral-100",
+          isLoading && "opacity-50 pointer-events-none",
         )}
       >
         <Avatar user={data} />
         <div className="min-w-0 flex-1">
-          <div className="focus:outline-none">
+          <div className="min-w-0 flex-1">
             <div className="flex justify-between items-center mb-1">
-              <span className=" truncate text-sm font-medium text-gray-900">
+              <span className="truncate text-sm font-medium text-gray-900">
                 {data.name}
               </span>
+
+              {isLoading && (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+              )}
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ interface IParams {
 }
 
 const ConversationIdPage = async ({ params }: { params: IParams }) => {
+  
   const currentUser = await getCurrentUser();
 
   const [conversation, messages] = await Promise.all([

@@ -53,19 +53,19 @@ export async function POST(request: Request) {
         messages: [],
       };
 
-      await Promise.all(
-        newConversation.users.map((user) =>
-          user.email
-            ? pusherServer.trigger(
-                user.email,
-                "conversation:new",
-                conversationForPusher,
-              )
-            : Promise.resolve(),
-        ),
-      );
+     Promise.all(
+       newConversation.users.map((user) =>
+         user.email
+           ? pusherServer.trigger(
+               user.email,
+               "conversation:new",
+               conversationForPusher,
+             )
+           : Promise.resolve(),
+       ),
+     ).catch(console.error);
 
-      return NextResponse.json(newConversation);
+     return NextResponse.json(conversationForPusher, { status: 201 });
     }
 
     // ==================================================
@@ -127,18 +127,17 @@ export async function POST(request: Request) {
       messages: [],
     };
 
-   await Promise.all(
-     newConversation.users.map((user) =>
-       user.email
-         ? pusherServer.trigger(
-             user.email,
-             "conversation:new",
-             conversationForPusher,
-           )
-         : Promise.resolve(),
-     ),
-   );
-
+    Promise.all(
+      newConversation.users.map((user) =>
+        user.email
+          ? pusherServer.trigger(
+              user.email,
+              "conversation:new",
+              conversationForPusher,
+            )
+          : Promise.resolve(),
+      ),
+    ).catch(console.error);
 
     return NextResponse.json(conversationForPusher, { status: 201 });
   } catch (error) {

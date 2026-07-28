@@ -5,20 +5,17 @@ import EmptyState from "@/app/components/EmptyState";
 import ClientConversation from "./components/ClientConversation";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
-
 interface IParams {
   conversationId: string;
 }
 
 const ConversationIdPage = async ({ params }: { params: IParams }) => {
-  
-  const currentUser = await getCurrentUser();
 
-  const [conversation, messages] = await Promise.all([
+  const [conversation, messages, currentUser] = await Promise.all([
     getConversationById(params?.conversationId),
     getMessages(params?.conversationId),
+    getCurrentUser(),
   ]);
-
 
   if (!conversation) {
     return (

@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { User } from "@prisma/client";
+import Link from "next/link";
 
 import useOtherUser from "@/app/hooks/useOtherUser";
 
@@ -21,17 +21,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   data,
   selected,
 }) => {
-  const router = useRouter();
-
   const session = useSession();
-
   const otherUser = useOtherUser(data);
-
-
-
-  const handleClick = useCallback(() => {
-    router.push(`/conversations/${data.id}`);
-  }, [router, data.id]);
 
   const lastMessage = useMemo(() => {
     if (!data.messages?.length) {
@@ -64,8 +55,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   }, [lastMessage]);
 
   return (
-    <div
-      onClick={handleClick}
+    <Link
+      href={`/conversations/${data.id}`}
       className={`
         flex
         w-full
@@ -126,7 +117,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
           {lastMessageText}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 

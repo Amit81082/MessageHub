@@ -18,31 +18,21 @@ interface ConfirmModalProps {
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
-
   const { conversationId } = useConversation();
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const onDelete = useCallback(() => {
-    setIsLoading(true);
+    router.push("/conversations");
 
     axios
       .delete(`/api/conversations/${conversationId}`)
       .then(() => {
         toast.success("Conversation deleted");
-
-        router.push("/conversations");
-
         router.refresh();
-
         onClose();
       })
       .catch(() => {
-        toast.error("Something went wrong");
+        toast.error("Failed to delete conversation");
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
   }, [conversationId, onClose, router]);
 
   return (
@@ -92,11 +82,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, onClose }) => {
           gap-2
         "
       >
-        <Button danger disabled={isLoading} onClick={onDelete}>
+        <Button danger onClick={onDelete}>
           Delete
         </Button>
 
-        <Button secondary disabled={isLoading} onClick={onClose}>
+        <Button secondary onClick={onClose}>
           Cancel
         </Button>
       </div>

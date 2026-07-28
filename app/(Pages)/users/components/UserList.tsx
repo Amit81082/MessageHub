@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
-
 import UserBox from "./UserBox";
+
 
 type ConversationLookup = {
   id: string;

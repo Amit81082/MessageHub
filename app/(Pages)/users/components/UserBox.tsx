@@ -7,6 +7,7 @@ import { useState, useCallback } from "react";
 import clsx from "clsx";
 import { useEffect } from "react";
 import Avatar from "@/app/components/Avatar";
+import useConversationOpening from "@/app/hooks/useConversationOpening";
 
 type ConversationLookup = {
   id: string;
@@ -21,10 +22,11 @@ interface UserBoxProps {
 
 const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
   const router = useRouter();
-
+  const { setOpening } = useConversationOpening();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = useCallback(async () => {
+    setOpening(true);
     const existingConversation = conversations.find(
       (conversation) =>
         !conversation.isGroup && conversation.userIds.includes(data.id),
@@ -37,7 +39,6 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
 
     try {
       setIsLoading(true);
-
       const response = await axios.post("/api/conversations", {
         userId: data.id,
       });
@@ -67,10 +68,6 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
               <span className="truncate text-sm font-medium text-gray-900">
                 {data.name}
               </span>
-
-              {isLoading && (
-                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-              )}
             </div>
           </div>
         </div>

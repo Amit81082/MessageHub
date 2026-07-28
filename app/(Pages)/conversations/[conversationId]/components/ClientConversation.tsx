@@ -7,6 +7,8 @@ import Body from "./Body";
 import MessageForm from "./MessageForm";
 import { ConversationHeaderType, FullMessageType } from "@/app/types";
 import { User } from "@prisma/client";
+import { useEffect } from "react";
+import useConversationOpening from "@/app/hooks/useConversationOpening";
 
 interface ClientConversationProps {
   conversation: ConversationHeaderType;
@@ -22,10 +24,15 @@ const ClientConversation: React.FC<ClientConversationProps> = ({
   currentUser,
 }) => {
   const [allMessages, setAllMessages] = useState(messages);
+  const { setOpening } = useConversationOpening();
 
   const handleSetMessages = useCallback<typeof setAllMessages>((updater) => {
     setAllMessages(updater);
   }, []);
+
+  useEffect(() => {
+    setOpening(false);
+  }, [setOpening]);
 
   return (
     <div className="h-full flex flex-col">

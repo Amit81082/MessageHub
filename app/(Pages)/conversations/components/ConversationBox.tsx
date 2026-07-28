@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { User } from "@prisma/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import useOtherUser from "@/app/hooks/useOtherUser";
 
@@ -23,6 +24,11 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
 }) => {
   const session = useSession();
   const otherUser = useOtherUser(data);
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch(`/conversations/${data.id}`);
+  }, [router, data.id]);
 
   const lastMessage = useMemo(() => {
     if (!data.messages?.length) {

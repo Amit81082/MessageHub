@@ -1,10 +1,10 @@
 // create userLayout
 
 import React from "react";
-import UserList from "./UserList";
 import getUsers from "@/app/actions/getUsers";
 import Sidebar from "@/app/components/sidebar/Sidebar";
 import getConversationLookup from "@/app/actions/getConversationLookup";
+import UserList from "./components/UserList";
 
 export default async function UsersLayout({
   children,

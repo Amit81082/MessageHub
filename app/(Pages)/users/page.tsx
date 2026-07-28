@@ -1,12 +1,5 @@
-import EmptyState from "@/app/components/EmptyState";
-import React from "react";
+import RightPanel from "./components/UsersPlaceholder";
 
-const User = () => {
-  return (
-    <div className="hidden lg:block lg:pl-80 h-full">
-      <EmptyState />
-    </div>
-  );
-};
-
-export default User;
+export default function UserPage() {
+  return <RightPanel />;
+}

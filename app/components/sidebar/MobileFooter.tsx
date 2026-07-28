@@ -4,6 +4,8 @@ import useConversation from "@/app/hooks/useConversation";
 import useRoutes from "@/app/hooks/useRoutes";
 import MobileItem from "./MobileItem";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import Avatar from "../Avatar";
 import SettingsModal from "./SettingsModal";
@@ -17,6 +19,12 @@ const MobileFooter: React.FC<MobileFooterProps> = ({ currentUser }) => {
   const routes = useRoutes();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { isOpen } = useConversation();
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch("/users");
+    router.prefetch("/conversations");
+  }, [router]);
 
   if (isOpen) {
     return null;

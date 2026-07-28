@@ -6,6 +6,8 @@ import { User } from "@prisma/client";
 import { useState } from "react";
 import Avatar from "../Avatar";
 import SettingsModal from "./SettingsModal";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface DesktopSidebarProps {
   currentUser: User;
@@ -14,6 +16,12 @@ interface DesktopSidebarProps {
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
   const routes = useRoutes();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch("/users");
+    router.prefetch("/conversations");
+  }, [router]);
 
   // console.log(" currentUser", currentUser);
 

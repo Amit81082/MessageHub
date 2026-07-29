@@ -1,5 +1,5 @@
-import RightPanel from "./components/UsersPlaceholder";
+import UsersPlaceholder from "./components/UsersPlaceholder";
 
 export default function UserPage() {
-  return <RightPanel />;
+  return <UsersPlaceholder />;
 }

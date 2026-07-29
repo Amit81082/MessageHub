@@ -15,6 +15,8 @@ export default async function UsersLayout({
     getUsers(),
     getConversationLookup(),
   ]);
+
+  
   return (
     <Sidebar>
       <div className="h-full">

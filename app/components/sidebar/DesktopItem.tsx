@@ -28,6 +28,9 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
 
     if (href) {
       router.push(href);
+      requestAnimationFrame(() => {
+        router.refresh();
+      });
     }
   };
 

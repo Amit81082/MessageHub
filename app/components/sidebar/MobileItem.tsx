@@ -12,15 +12,25 @@ interface MobileItemProps {
   onClick?: () => void;
 }
 
-const MobileItem: React.FC<MobileItemProps> = ({ href, icon: Icon, active, onClick }) => {
+const MobileItem: React.FC<MobileItemProps> = ({
+  href,
+  icon: Icon,
+  active,
+  onClick,
+}) => {
   const router = useRouter();
-  const handleClick = () => {
-    if (onClick) {
-      return onClick();
-    }
+   const handleClick = () => {
+     if (onClick) {
+       return onClick();
+     }
 
-    return router.push(href);
-  }
+     if (href) {
+       router.push(href);
+       requestAnimationFrame(() => {
+         router.refresh();
+       });
+     }
+   };
 
   return (
     <Link
@@ -41,7 +51,7 @@ const MobileItem: React.FC<MobileItemProps> = ({ href, icon: Icon, active, onCli
           hover:text-black
           hover:bg-gray-100
         `,
-        active && "bg-gray-100 text-black"
+        active && "bg-gray-100 text-black",
       )}
     >
       <Icon className="h-6 w-6" />
@@ -50,4 +60,3 @@ const MobileItem: React.FC<MobileItemProps> = ({ href, icon: Icon, active, onCli
 };
 
 export default MobileItem;
-

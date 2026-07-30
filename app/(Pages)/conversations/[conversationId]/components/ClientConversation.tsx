@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, memo, useRef } from "react";
+import { useState, useCallback, memo } from "react";
 
 import Header from "./Header";
 import Body from "./Body";
@@ -9,7 +9,6 @@ import { ConversationHeaderType, FullMessageType } from "@/app/types";
 import { User } from "@prisma/client";
 import { useEffect } from "react";
 import useConversationOpening from "@/app/hooks/useConversationOpening";
-import { useRouter } from "next/navigation";
 
 interface ClientConversationProps {
   conversation: ConversationHeaderType;
@@ -31,15 +30,21 @@ const ClientConversation: React.FC<ClientConversationProps> = ({
     setAllMessages(updater);
   }, []);
 
-  const router = useRouter();
-  const hasRefreshed = useRef(false);
-
   useEffect(() => {
-    if (hasRefreshed.current) return;
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`/api/messages/${conversation.id}`);
 
-    hasRefreshed.current = true;
-    router.refresh();
-  }, [router]);
+        const latestMessages = await response.json();
+
+        setAllMessages(latestMessages);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMessages();
+  }, [conversation.id]);
 
   useEffect(() => {
     setOpening(false);

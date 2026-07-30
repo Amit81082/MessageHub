@@ -19,12 +19,6 @@ const MobileFooter: React.FC<MobileFooterProps> = ({ currentUser }) => {
   const routes = useRoutes();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { isOpen } = useConversation();
-  const router = useRouter();
-
-  useEffect(() => {
-    router.prefetch("/users");
-    router.prefetch("/conversations");
-  }, [router]);
 
   if (isOpen) {
     return null;

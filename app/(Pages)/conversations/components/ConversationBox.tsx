@@ -26,10 +26,6 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   const otherUser = useOtherUser(data);
   const router = useRouter();
 
-  useEffect(() => {
-    router.prefetch(`/conversations/${data.id}`);
-  }, [router, data.id]);
-
   const lastMessage = useMemo(() => {
     if (!data.messages?.length) {
       return null;

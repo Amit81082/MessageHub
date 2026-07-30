@@ -4,6 +4,7 @@ import DesktopSidebar from "./DesktopSidebar";
 import MobileFooter from "./MobileFooter";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import MobileConversationSkeleton from "./MobileConversationSkeleton";
+import GlobalConversationSync from "@/app/components/GlobalConversationSync";
 
 async function Sidebar({ children }: { children: React.ReactNode }) {
   const currentUser = await getCurrentUser();
@@ -12,6 +13,7 @@ async function Sidebar({ children }: { children: React.ReactNode }) {
       <MobileConversationSkeleton />
       <DesktopSidebar currentUser={currentUser!} />
       <MobileFooter currentUser={currentUser!} />
+      <GlobalConversationSync />
       <main className="lg:pl-20 h-full">{children}</main>
     </div>
   );

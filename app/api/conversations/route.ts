@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         messages: [],
       };
 
-     Promise.all(
+     await Promise.all(
        newConversation.users.map((user) =>
          user.email
            ? pusherServer.trigger(
@@ -63,7 +63,9 @@ export async function POST(request: Request) {
              )
            : Promise.resolve(),
        ),
-     ).catch(console.error);
+     );
+
+     console.log("✅ group conversation:new triggered");
 
      return NextResponse.json(conversationForPusher, { status: 201 });
     }
@@ -127,7 +129,7 @@ export async function POST(request: Request) {
       messages: [],
     };
 
-    Promise.all(
+    await Promise.all(
       newConversation.users.map((user) =>
         user.email
           ? pusherServer.trigger(
@@ -137,7 +139,9 @@ export async function POST(request: Request) {
             )
           : Promise.resolve(),
       ),
-    ).catch(console.error);
+    );
+
+    console.log("✅ conversation:new triggered");
 
     return NextResponse.json(conversationForPusher, { status: 201 });
   } catch (error) {

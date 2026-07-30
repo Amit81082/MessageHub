@@ -16,12 +16,6 @@ interface DesktopSidebarProps {
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
   const routes = useRoutes();
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    router.prefetch("/users");
-    router.prefetch("/conversations");
-  }, [router]);
 
   // console.log(" currentUser", currentUser);
 

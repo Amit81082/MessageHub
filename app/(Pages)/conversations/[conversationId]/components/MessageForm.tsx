@@ -35,9 +35,10 @@ const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) =
     setValue("message", "", { shouldValidate: false });
 
     const clientId = crypto.randomUUID();
+    const tempId = `temp-${clientId}`;
 
     const tempMessage: FullMessageType = {
-      id: `temp-${clientId}`,
+      id: tempId,
       clientId,
       body: text,
       image: null,

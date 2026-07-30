@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { MdOutlineGroupAdd } from "react-icons/md";
-import { useSession } from "next-auth/react";
 
 import useConversation from "@/app/hooks/useConversation";
 import clsx from "clsx";
@@ -12,8 +10,7 @@ import { FullConversationType } from "@/app/types";
 import { User } from "@prisma/client";
 import ConversationBox from "./ConversationBox";
 import GroupChatModal from "./GroupChatModal";
-import { pusherClient } from "@/app/libs/pusherClient";
-import { find } from "lodash";
+import useConversationStore from "@/app/hooks/useConversationStore";
 
 interface ConversationListProps {
   initialItems: FullConversationType[];
@@ -23,77 +20,28 @@ interface ConversationListProps {
 const ConversationList: React.FC<ConversationListProps> = ({
   initialItems, users
 }) => {
-  const router = useRouter();
-  const session = useSession();
-
   const { conversationId, isOpen } = useConversation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [items, setItems] = useState(initialItems);
-
-  const pusherKey = useMemo(() => {
-    return session.data?.user?.email;
-  }, [session.data?.user?.email]);
+  const {
+    conversations,
+    setConversations,
+  } = useConversationStore();
 
   useEffect(() => {
-    if (!pusherKey) {
-      return;
+    if (conversations.length === 0) {
+      setConversations(initialItems);
     }
-
-    pusherClient.subscribe(pusherKey);
-
-    const newHandler = (conversation: FullConversationType) => {
-      setItems((current) => {
-        if (find(current, { id: conversation.id })) {
-          return current;
-        }
-
-        return [conversation, ...current];
-      });
-    };
-
-    const updateHandler = (conversation: FullConversationType) => {
-      setItems((current) =>
-        current.map((currentConversation) => {
-          if (currentConversation.id === conversation.id) {
-            return {
-              ...currentConversation,
-              messages: conversation.messages,
-            };
-          }
-
-          return currentConversation;
-        })
-      );
-    };
-
-    const removeHandler = (conversation: FullConversationType) => {
-      setItems((current) => {
-        return [...current.filter((convo) => convo.id !== conversation.id)];
-      });
-      if (conversationId === conversation.id) {
-        router.push("/conversations");
-      }
-    };
-
-    pusherClient.bind("conversation:new", newHandler);
-    pusherClient.bind("conversation:update", updateHandler);
-    pusherClient.bind("conversation:remove", removeHandler);
-
-    return () => {
-      pusherClient.unsubscribe(pusherKey);
-      pusherClient.unbind("conversation:new", newHandler);
-      pusherClient.unbind("conversation:update", updateHandler);
-      pusherClient.unbind("conversation:remove", removeHandler);
-    };
-  }, [pusherKey, conversationId, router]);
-
-
+  }, [conversations.length, initialItems, setConversations]);
 
 
   return (
     <>
-      <GroupChatModal users={users} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <GroupChatModal
+        users={users}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       <aside
         className={clsx(
           "fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200",
@@ -110,7 +58,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
               <MdOutlineGroupAdd size={20} />
             </div>
           </div>
-          {items.map((item) => (
+          {conversations.map((item) => (
             <ConversationBox
               key={item.id}
               data={item}

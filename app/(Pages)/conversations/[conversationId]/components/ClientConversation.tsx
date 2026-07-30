@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useRef } from "react";
 
 import Header from "./Header";
 import Body from "./Body";
@@ -9,6 +9,7 @@ import { ConversationHeaderType, FullMessageType } from "@/app/types";
 import { User } from "@prisma/client";
 import { useEffect } from "react";
 import useConversationOpening from "@/app/hooks/useConversationOpening";
+import { useRouter } from "next/navigation";
 
 interface ClientConversationProps {
   conversation: ConversationHeaderType;
@@ -30,6 +31,16 @@ const ClientConversation: React.FC<ClientConversationProps> = ({
     setAllMessages(updater);
   }, []);
 
+  const router = useRouter();
+  const hasRefreshed = useRef(false);
+
+  useEffect(() => {
+    if (hasRefreshed.current) return;
+
+    hasRefreshed.current = true;
+    router.refresh();
+  }, [router]);
+
   useEffect(() => {
     setOpening(false);
   }, [setOpening]);
@@ -40,7 +51,10 @@ const ClientConversation: React.FC<ClientConversationProps> = ({
 
       <Body messages={allMessages} setMessages={handleSetMessages} />
 
-      <MemoizedMessageForm setMessages={handleSetMessages} currentUser={currentUser} />
+      <MemoizedMessageForm
+        setMessages={handleSetMessages}
+        currentUser={currentUser}
+      />
     </div>
   );
 };

@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { IconType } from "react-icons";
 import clsx from "clsx";
-import Link from "next/link";
 
 interface MobileItemProps {
   href: string;
@@ -26,15 +25,11 @@ const MobileItem: React.FC<MobileItemProps> = ({
 
      if (href) {
        router.push(href);
-       requestAnimationFrame(() => {
-         router.refresh();
-       });
      }
    };
 
   return (
-    <Link
-      href={href}
+    <div
       onClick={handleClick}
       className={clsx(
         `
@@ -55,7 +50,7 @@ const MobileItem: React.FC<MobileItemProps> = ({
       )}
     >
       <Icon className="h-6 w-6" />
-    </Link>
+    </div>
   );
 };
 

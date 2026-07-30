@@ -8,14 +8,10 @@ export default async function ConversationLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const conversations = await getConversations();
-  // const users = await getUsers();
-
   const [conversations, users] = await Promise.all([
     getConversations(),
     getUsers(),
   ]);
-
   return (
     <Sidebar>
       <div className="h-full">

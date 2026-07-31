@@ -44,6 +44,7 @@ const UserBox: React.FC<UserBoxProps> = ({ data, conversations }) => {
       });
 
       router.push(`/conversations/${response.data.id}`);
+      router.refresh();
     } catch (error) {
       console.error(error);
     } finally {

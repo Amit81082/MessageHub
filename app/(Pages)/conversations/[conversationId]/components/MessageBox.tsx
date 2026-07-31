@@ -47,7 +47,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ data, isLast }) => {
 
         <div
           className={clsx(
-            "overflow-hidden rounded-lg text-sm w-fit max-w-[80%] sm:max-w-md wrap-break-word",
+            "overflow-hidden rounded-lg text-sm w-fit max-w-[80%] sm:max-w-md",
             isOwn ? "bg-sky-500 text-white" : "bg-gray-100 text-black",
             data.image ? "rounded-md p-0" : "px-3 py-2 rounded-full",
           )}
@@ -72,7 +72,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ data, isLast }) => {
               "
             />
           ) : (
-            <div className="break-all whitespace-pre-wrap">
+            <div className="whitespace-pre-wrap wrap-break-word overflow-wrap-anywhere">
               {data.body}
             </div>
           )}

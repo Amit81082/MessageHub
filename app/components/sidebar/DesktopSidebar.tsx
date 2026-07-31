@@ -6,8 +6,6 @@ import { User } from "@prisma/client";
 import { useState } from "react";
 import Avatar from "../Avatar";
 import SettingsModal from "./SettingsModal";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 interface DesktopSidebarProps {
   currentUser: User;

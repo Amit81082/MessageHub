@@ -19,6 +19,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // console.log("🔥 ROOT LAYOUT SERVER");
   return (
     <html
       lang="en"

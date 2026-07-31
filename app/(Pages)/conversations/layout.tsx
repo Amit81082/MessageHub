@@ -1,6 +1,5 @@
 import getConversations from "@/app/actions/getConversations";
 import getUsers from "@/app/actions/getUsers";
-import Sidebar from "@/app/components/sidebar/Sidebar";
 import ConversationList from "./components/ConversationList";
 
 export default async function ConversationLayout({
@@ -13,11 +12,9 @@ export default async function ConversationLayout({
     getUsers(),
   ]);
   return (
-    <Sidebar>
-      <div className="h-full">
-        <ConversationList users={users} initialItems={conversations} />
-        {children}
-      </div>
-    </Sidebar>
+    <div className="h-full">
+      <ConversationList users={users} initialItems={conversations} />
+      {children}
+    </div>
   );
 }

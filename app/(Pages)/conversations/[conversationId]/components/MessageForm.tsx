@@ -64,6 +64,10 @@ const MessageForm: React.FC<MessageFormProps> = ({
     // ✅ Instant UI
     setMessages((current) => [...current, tempMessage]);
 
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+
     try {
       await axios.post("/api/messages", {
         message: text,
@@ -75,11 +79,7 @@ const MessageForm: React.FC<MessageFormProps> = ({
       setMessages((current) =>
         current.filter((message) => message.id !== tempId),
       );
-    } finally {
-      requestAnimationFrame(() => {
-        inputRef.current?.focus();
-      });
-    }
+    } 
   };
 
   const handleUpload = async (result: unknown) => {

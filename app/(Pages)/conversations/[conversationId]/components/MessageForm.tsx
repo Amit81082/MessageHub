@@ -15,17 +15,27 @@ interface MessageFormProps {
   currentUser: User;
 }
 
-const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) => {
+const MessageForm: React.FC<MessageFormProps> = ({
+  setMessages,
+  currentUser,
+}) => {
   const { conversationId } = useConversation();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FieldValues>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FieldValues>({
     defaultValues: {
-      message: ""
-    }
+      message: "",
+    },
   });
 
-  const { ref: formRef, ...messageRegister } = register("message", { required: true });
+  const { ref: formRef, ...messageRegister } = register("message", {
+    required: true,
+  });
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const text = data.message;
@@ -58,22 +68,27 @@ const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) =
       await axios.post("/api/messages", {
         message: text,
         conversationId,
-        clientId
+        clientId,
       });
     } catch {
       // Remove temp message if request fails
       setMessages((current) =>
-        current.filter((message) => message.id !== clientId),
+        current.filter((message) => message.id !== tempId),
       );
+    } finally {
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
     }
   };
 
   const handleUpload = async (result: unknown) => {
-    const secureUrl = (result as { info?: { secure_url?: string } })?.info?.secure_url;
+    const secureUrl = (result as { info?: { secure_url?: string } })?.info
+      ?.secure_url;
 
     await axios.post("/api/messages", {
       image: secureUrl,
-      conversationId
+      conversationId,
     });
   };
 
@@ -128,6 +143,6 @@ const MessageForm: React.FC<MessageFormProps> = ({ setMessages, currentUser }) =
       </form>
     </div>
   );
-}
+};
 
 export default MessageForm;

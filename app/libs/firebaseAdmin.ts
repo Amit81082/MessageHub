@@ -1,11 +1,13 @@
-import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
 
-import serviceAccount from "../../firebase-adminsdk.json";
-
-if (getApps().length === 0) {
+if (!getApps().length) {
   initializeApp({
-    credential: cert(serviceAccount as Parameters<typeof cert>[0]),
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    }),
   });
 }
 

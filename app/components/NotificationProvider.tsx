@@ -35,7 +35,7 @@ const NotificationProvider = () => {
          serviceWorkerRegistration: registration,
        });
 
-
+        console.log("FCM token:", token);
         await axios.post("/api/fcm-token", {
           token,
         });

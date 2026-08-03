@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import AuthContext from "./context/AuthContext";
 import { Inter } from "next/font/google";
 import ActiveStatus from "./components/ActiveStatus";
+import NotificationProvider from "./components/NotificationProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthContext>
+          <NotificationProvider />
           <Toaster />
           <ActiveStatus />
           {children}

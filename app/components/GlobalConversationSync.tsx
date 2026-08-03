@@ -34,8 +34,6 @@ const GlobalConversationSync = () => {
     pusherClient.subscribe(pusherKey);
 
     const newHandler = (conversation: FullConversationType) => {
-      console.log("🟢 conversation:new", conversation);
-
       if (find(conversations, { id: conversation.id })) {
         return;
       }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { pusherServer } from "@/app/libs/pusher";
+import { sendPushNotification } from "@/app/services/notificationService";
 
 export async function POST(request: Request) {
   try {
@@ -77,7 +78,13 @@ export async function POST(request: Request) {
         id: true,
         users: {
           select: {
+            id: true,
             email: true,
+            deviceTokens: {
+              select: {
+                token: true,
+              },
+            },
           },
         },
       },
@@ -121,6 +128,24 @@ export async function POST(request: Request) {
         }),
       ),
     );
+
+   const receivers = updatedConversation.users.filter(
+     (user) => user.id !== currentUser.id,
+   );
+
+   for (const receiver of receivers) {
+     const tokens = receiver.deviceTokens.map((device) => device.token);
+
+     void sendPushNotification({
+       tokens,
+       title: currentUser.name ?? "New Message",
+       body: message || "📷 Image",
+       data: {
+         conversationId,
+       },
+     });
+
+   }
 
     return NextResponse.json(newMessage);
   } catch (error) {

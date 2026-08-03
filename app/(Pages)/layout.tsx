@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Sidebar from "@/app/components/sidebar/Sidebar";
 
 export default function PagesLayout({
